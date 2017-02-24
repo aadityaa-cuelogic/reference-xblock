@@ -1,0 +1,11 @@
+table#referenceapp_table{
+	border-collapse: collapse;
+	width: 100%;
+}
+table#referenceapp_table, table#referenceapp_table th, table#referenceapp_table td {
+   border: 1px solid black;
+   padding: 15px;
+}
+.dnone {
+	display: none;
+}

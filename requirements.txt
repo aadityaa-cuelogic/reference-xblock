@@ -1,0 +1,4 @@
+-e .
+-e git://github.com/edx-solutions/xblock-utils.git@7d7201fb2b0bfc8e5d13905d1cedf88335ab4a93#egg=xblock-utils
+-e git+https://github.com/openfun/xblock-utils2.git@e412419c2c1189c70fa24911a6dff834dff634cf#egg=xblock_utils2-master
+

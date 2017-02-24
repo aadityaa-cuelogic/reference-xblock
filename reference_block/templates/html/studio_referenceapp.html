@@ -1,0 +1,30 @@
+<div>
+    <table id="referenceapp_table" class="table table-hover">
+		<caption>ReferenceApp List</caption>
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Link</th>
+				<th>Description</th>
+				<th>Action</th>
+			</tr>
+		</thead>
+		<tbody>
+		{% for ref in data %}
+			<tr class="reference-data">
+				<th class="reference-name" rel="{{ref.reference_name}}">{{ref.reference_name}}</th>
+				<th class="reference-link" rel="{{ref.reference_link}}">{{ref.reference_link}}</th>
+				<th class="reference-desc" rel="{{ref.reference_desc}}">{{ref.reference_desc}}</th>
+				<th>
+					{% if ref.disable == True %}
+						<button class="remove-reference" rel="{{ref.id}}">Remove</button>
+					{% else %}
+						<button class="add-reference" rel="{{ref.id}}">Add</button>
+					{% endif %}
+				</th>
+			</tr>
+		{%endfor%}
+		
+		</tbody>
+	</table>
+</div>

@@ -1,0 +1,21 @@
+<div>
+    <table id="referenceapp_table" class="table table-hover">
+		<caption>ReferenceApp List</caption>
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Link</th>
+				<th>Description</th>
+			</tr>
+		</thead>
+		<tbody>
+		{% for ref in data%}
+			<tr>
+				<th>{{ref.ref_name}}</th>
+				<th><a href="{{ref.ref_link}}">{{ref.ref_link}}</a></th>
+				<th>{{ref.ref_desc}}</th>
+			</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+</div>
