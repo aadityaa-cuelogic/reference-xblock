@@ -3,13 +3,14 @@ import logging
 import pkg_resources
 
 from xblock.core import XBlock
-from xblock.fields import Scope, String, Integer, Boolean, List
+from xblock.fields import Scope, List
 # from xblock.exception import XBlockSaveError
 from xblock.fragment import Fragment
+from django.template import Context, Template
 
 from referenceapp.models import Referenceapp #importing referenceapp model from edx
 
-from .utils import loader, AttrDict
+# from .utils import loader, AttrDict
 
 log = logging.getLogger(__name__)
 
@@ -26,42 +27,22 @@ class ReferenceBlock(XBlock):
         scope=Scope.settings,
     )
 
+    '''
+    Util functions
+    '''
+    def load_resource(self, resource_path):
+        """
+        Gets the content of a resource
+        """
+        resource_content = pkg_resources.resource_string(__name__, resource_path)
+        return unicode(resource_content)
 
-    def resource_string(self, path):
-        """Handy helper for getting resources from our kit."""
-        data = pkg_resources.resource_string(__name__, path)
-        return data.decode("utf8")
-
-    def _is_studio(self):
+    def render_template(self, template_path, context={}):
         """
-        This Function checks if call is from CMS or LMS and returns boolean
-        True if call is from studio.
+        Evaluate a template by resource path, applying the provided context
         """
-        studio = False
-        try:
-            studio = self.runtime.is_author_mode
-        except AttributeError:
-            pass
-        return studio
-
-    def _user_is_staff(self):
-        """
-        This Function checks if user is staff and returns boolean
-        True if user is staff.
-        """
-        return getattr(self.runtime, 'user_is_staff', False)
-
-    def get_block_id(self):
-        """
-        Thsi function returns the block id.
-        """
-        return self.url_name
-
-    def _render_template(self, ressource, **kwargs):
-        template = Template(self.resource_string(ressource))
-        context = dict({}, **kwargs)
-        html = template.render(Context(context))
-        return html
+        template_str = self.load_resource(template_path)
+        return Template(template_str).render(Context(context))
 
     def student_view(self, context=None):
         """
@@ -87,15 +68,22 @@ class ReferenceBlock(XBlock):
         # return frag
 
 
-        fragment = Fragment()
-        fragment.add_content(loader.render_template(
-                                'templates/html/student_referenceapp.html',
-                                {'data': self.referenceapp_links, 'self': self})
-                            )
-        fragment.add_css(
-            self.resource_string("static/css/custom.css"))
-        fragment.add_javascript(
-            self.resource_string("static/js/custom.js"))
+        html = self.render_template(
+                                    'templates/html/student_referenceapp.html',
+                                    {'data': self.referenceapp_links,
+                                        'self': self})
+
+        fragment = Fragment(html)
+        fragment.add_css(self.load_resource("static/css/custom.css"))
+        fragment.add_javascript(self.load_resource("static/js/custom.js"))
+        # fragment.add_content(loader.render_template(
+        #                         'templates/html/student_referenceapp.html',
+        #                         {'data': self.referenceapp_links, 'self': self})
+        #                     )
+        # fragment.add_css(
+        #     self.resource_string("static/css/custom.css"))
+        # fragment.add_javascript(
+        #     self.resource_string("static/js/custom.js"))
         fragment.initialize_js('ReferenceBlock')
         return fragment
 
@@ -111,17 +99,30 @@ class ReferenceBlock(XBlock):
                 if new_ref.reference_link == cur_link:
                     new_ref.disable = True
 
-        fragment = Fragment()
-        fragment.add_content(loader.render_template(
+        html = self.render_template(
                                     'templates/html/studio_referenceapp.html',
-                                    {'data': all_ref})
-                            )
-        fragment.add_css(
-            self.resource_string("static/css/custom.css"))
-        fragment.add_javascript(
-            self.resource_string("static/js/custom.js"))
+                                    {'data': all_ref, 'self':self})
+
+        fragment = Fragment(html)
+        fragment.add_css(self.load_resource("static/css/custom.css"))
+        fragment.add_javascript(self.load_resource("static/js/custom.js"))
+        # fragment.add_content(loader.render_template(
+        #                             'templates/html/studio_referenceapp.html',
+        #                             {'data': all_ref, 'self':self})
+        #                     )
+        # fragment.add_css(
+        #     self.resource_string("static/css/custom.css"))
+        # fragment.add_javascript(
+        #     self.resource_string("static/js/custom.js"))
         fragment.initialize_js('ReferenceBlock')
         return fragment
+
+    @XBlock.json_handler
+    def studio_submit(self, data, suffix=''):
+        self.referenceapp_links = data
+        # print self.referenceapp_links
+        return {'status':'success'}
+
 
     @XBlock.json_handler
     def studio_add_submit(self, data, suffix=''):
@@ -149,6 +150,7 @@ class ReferenceBlock(XBlock):
             return {'status':'success'}
         else:
             return {'status':'error'}
+
 
     @XBlock.json_handler
     def studio_remove_submit(self, data, suffix=''):

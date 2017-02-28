@@ -1,4 +1,4 @@
-<div>
+<div class="wrapper-comp-settings is-active editor-with-buttons" id="settings-tab">
     <table id="referenceapp_table" class="table table-hover">
 		<caption>ReferenceApp List</caption>
 		<thead>
@@ -11,20 +11,35 @@
 		</thead>
 		<tbody>
 		{% for ref in data %}
-			<tr class="reference-data">
-				<th class="reference-name" rel="{{ref.reference_name}}">{{ref.reference_name}}</th>
-				<th class="reference-link" rel="{{ref.reference_link}}">{{ref.reference_link}}</th>
-				<th class="reference-desc" rel="{{ref.reference_desc}}">{{ref.reference_desc}}</th>
-				<th>
-					{% if ref.disable == True %}
-						<button class="remove-reference" rel="{{ref.id}}">Remove</button>
-					{% else %}
-						<button class="add-reference" rel="{{ref.id}}">Add</button>
-					{% endif %}
-				</th>
-			</tr>
+			{% if ref.disable == True %}
+				<tr class="reference-data ref-link-exists" rel="{{ref.id}}">
+			{% else %}
+				<tr class="reference-data">
+			{% endif %}
+					<th class="reference-name" rel="{{ref.reference_name}}">{{ref.reference_name}}</th>
+					<th class="reference-link" rel="{{ref.reference_link}}">{{ref.reference_link}}</th>
+					<th class="reference-desc" rel="{{ref.reference_desc}}">{{ref.reference_desc}}</th>
+					<th>
+						{% if ref.disable == True %}
+							<button class="remove-reference" rel="{{ref.id}}">Remove</button>
+						{% else %}
+							<button class="add-reference" rel="{{ref.id}}">Add</button>
+						{% endif %}
+					</th>
+				</tr>
 		{%endfor%}
 		
 		</tbody>
 	</table>
+
+	<div class="xblock-actions">
+        <ul>
+            <li class="action-item">
+                <a href="#" class="button action-primary save-reference-link">Save</a>
+            </li>
+            <li class="action-item">
+                <a href="#" class="button action-cancel">Cancel</a>
+            </li>
+        </ul>
+    </div>
 </div>
